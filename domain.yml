@@ -1,0 +1,103 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+  - find_hospital
+  - nlu_fallback
+
+entities:
+  - location
+  - specialty
+  - radius_km
+
+slots:
+  location:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: location
+      - type: from_text
+        conditions:
+          - active_loop: hospital_form
+            requested_slot: location
+
+  specialty:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: specialty
+      - type: from_text
+        conditions:
+          - active_loop: hospital_form
+            requested_slot: specialty
+
+  radius_km:
+    type: any
+    influence_conversation: false
+    initial_value: 5
+    mappings:
+      - type: from_entity
+        entity: radius_km
+      - type: from_text
+        conditions:
+          - active_loop: hospital_form
+            requested_slot: radius_km
+
+forms:
+  hospital_form:
+    required_slots:
+      - location
+      - specialty
+      - radius_km
+
+responses:
+  utter_greet:
+    - text: "Hi! How can I help you today?"
+
+  utter_goodbye:
+    - text: "Bye! Take care."
+
+  utter_happy:
+    - text: "Great to hear that! 🎉"
+
+  utter_cheer_up:
+    - text: "I’m sorry you’re feeling down. Here’s something to cheer you up 😊"
+      image: "https://i.imgur.com/nGF1K8f.jpg"
+
+  utter_did_that_help:
+    - text: "Did that help you?"
+
+  utter_iamabot:
+    - text: "I’m a virtual assistant powered by Rasa."
+
+  utter_ask_location:
+    - text: "Which area/city should I search? (e.g., 'Hazratganj Lucknow')"
+
+  utter_ask_specialty:
+    - text: "Any specialty? (e.g., cardiology). Say 'any' if none."
+
+  utter_ask_radius_km:
+    - text: "How far should I look (in km)? Default is 5."
+
+  utter_no_results:
+    - text: "I couldn't find any hospitals for your criteria. Try increasing the radius or removing the specialty."
+
+  utter_fallback:
+    - text: "Sorry, I didn’t catch that. Could you rephrase?"
+
+actions:
+  - validate_hospital_form
+  - action_find_hospitals
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+

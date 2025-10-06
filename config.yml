@@ -1,0 +1,26 @@
+version: "3.1"
+language: en
+
+pipeline:
+  - name: WhitespaceTokenizer
+  - name: RegexFeaturizer
+  - name: LexicalSyntacticFeaturizer
+  - name: CountVectorsFeaturizer         # word-level bag of words
+  - name: CountVectorsFeaturizer         # char n-grams help short texts like “6”, “any”
+    analyzer: char_wb
+    min_ngram: 1
+    max_ngram: 4
+  - name: DIETClassifier
+    epochs: 150
+    constrain_similarities: true
+  - name: EntitySynonymMapper
+  - name: FallbackClassifier
+    threshold: 0.4
+    ambiguity_threshold: 0.1
+
+policies:
+  - name: RulePolicy
+  - name: MemoizationPolicy
+  - name: UnexpecTEDIntentPolicy
+    max_history: 5
+    epochs: 100
